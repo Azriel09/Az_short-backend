@@ -1,11 +1,9 @@
-const crypto = require('crypto')
-const cors = require('cors')
-const mysql = require("mysql")
-const express = require("express");
-const bodyParser = require("body-parser");
-const app = express();
-require('dotenv').config()
-app.use(function(req, res, next) {
+const express = require('express')
+const serverless = require('serverless-http')
+const api = express()
+const router = express.Router()
+
+api.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
@@ -19,13 +17,13 @@ app.use(function(req, res, next) {
     next();
   });
   
-  app.use(cors());
-  app.use(express.json());
+api.use(cors());
+api.use(express.json());
   
 //   app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
+api.use(bodyParser.urlencoded({ extended: true }));
 
-  const dbConfig = {
+const dbConfig = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
@@ -64,11 +62,11 @@ db.connect((err) => {
    
 })
 
-app.get("/", (req, res) => {
+router.get("/", (req, res) => {
     res.json("Kore ga backend da!")
 })
 
-app.post("/submit",(req, res) => {
+router.post("/submit",(req, res) => {
     const q_insert = "INSERT INTO test (`link`, `code`, `visited`) VALUES (?)"
     const q_find = "SELECT * FROM az_short.test WHERE shortened LIKE (?)"
     let shortened = crypto.randomBytes(2).toString('hex')
@@ -93,7 +91,7 @@ app.post("/submit",(req, res) => {
 
 
 
-app.get("/:id", (res, req) => {
+router.get("/:id", (res, req) => {
     let value = res.params.id
     let long_url = ''
     
@@ -119,8 +117,5 @@ app.get("/:id", (res, req) => {
     })
   });
 
-
-app.listen(8800, () => {
-    console.log("Listening at port 8800")
-})
-
+api.use('/api/', router);
+export const handler = serverless(api);
