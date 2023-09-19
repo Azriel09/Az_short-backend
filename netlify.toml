@@ -1,3 +1,5 @@
+[Settings]
+    "siteId": "605d0d3c-8892-4d67-ac04-2936ffdee8ff"
 [build]
     functions = "functions"
 [functions]
