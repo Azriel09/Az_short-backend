@@ -2,7 +2,9 @@ const express = require('express')
 const serverless = require('serverless-http')
 const api = express()
 const router = express.Router()
-
+const cors = require('cors');
+const bodyParser = require('body-parser')
+const mysql = require('mysql2')
 api.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
@@ -75,7 +77,7 @@ router.post("/submit",(req, res) => {
 
     // const randomString = "SELECT SUBSTR(MD5(RAND()), 1, 10) AS randomString"
     
-    const link = "192.168.137.1:8800/"
+    const link = "https://azshort.netlify.app/"
     db.query(q_insert, [values], (err, data) => {
             
         if (err) {
@@ -117,5 +119,5 @@ router.get("/:id", (res, req) => {
     })
   });
 
-api.use('/api/', router);
+api.use('/.netlify/functions/api/', router);
 export const handler = serverless(api);
